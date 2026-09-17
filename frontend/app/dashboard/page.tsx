@@ -45,6 +45,7 @@ export default function Dashboard() {
   const [cargoForm, setCargoForm] = useState({
     concepto: "",
     monto: "",
+    mes: "",
     fecha_vencimiento: "",
   });
   
@@ -128,8 +129,8 @@ export default function Dashboard() {
     event.preventDefault();
     if (apartamentoSeleccionado === null) return;
 
-    if (!cargoForm.concepto.trim() || !cargoForm.monto || !cargoForm.fecha_vencimiento) {
-      alert("Completa concepto, monto y fecha de vencimiento.");
+    if (!cargoForm.concepto.trim() || !cargoForm.monto || !cargoForm.mes.trim() || !cargoForm.fecha_vencimiento) {
+      alert("Completa concepto, monto, mes y fecha de vencimiento.");
       return;
     }
 
@@ -144,6 +145,7 @@ export default function Dashboard() {
         apartamento_id: Number(apartamentoSeleccionado),
         concepto: String(cargoForm.concepto),
         monto: montoNumero,
+        mes: String(cargoForm.mes),
         estado: "Pendiente",
         fecha_vencimiento: cargoForm.fecha_vencimiento,
       }]);
@@ -157,7 +159,7 @@ export default function Dashboard() {
       alert("Cargo guardado con éxito");
       setIsCargoModalOpen(false);
       setApartamentoSeleccionado(null);
-      setCargoForm({ concepto: "", monto: "", fecha_vencimiento: "" });
+      setCargoForm({ concepto: "", monto: "", mes: "", fecha_vencimiento: "" });
       await recargarApartamentos();
     } catch (error) {
       console.error(error);
@@ -389,6 +391,26 @@ export default function Dashboard() {
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h2 className="text-lg font-semibold text-slate-900">Añadir Cargo</h2>
             <form onSubmit={handleCrearCargo} className="mt-5 space-y-4">
+              <select
+                required
+                value={cargoForm.mes}
+                onChange={(event) => setCargoForm({ ...cargoForm, mes: event.target.value })}
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              >
+                <option value="">Selecciona el mes</option>
+                <option value="Enero">Enero</option>
+                <option value="Febrero">Febrero</option>
+                <option value="Marzo">Marzo</option>
+                <option value="Abril">Abril</option>
+                <option value="Mayo">Mayo</option>
+                <option value="Junio">Junio</option>
+                <option value="Julio">Julio</option>
+                <option value="Agosto">Agosto</option>
+                <option value="Septiembre">Septiembre</option>
+                <option value="Octubre">Octubre</option>
+                <option value="Noviembre">Noviembre</option>
+                <option value="Diciembre">Diciembre</option>
+              </select>
               <input required value={cargoForm.concepto} onChange={(event) => setCargoForm({ ...cargoForm, concepto: event.target.value })} placeholder="Concepto" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
               <input required min="0" step="0.01" type="number" value={cargoForm.monto} onChange={(event) => setCargoForm({ ...cargoForm, monto: event.target.value })} placeholder="Monto" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
               <input required type="date" value={cargoForm.fecha_vencimiento} onChange={(event) => setCargoForm({ ...cargoForm, fecha_vencimiento: event.target.value })} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
