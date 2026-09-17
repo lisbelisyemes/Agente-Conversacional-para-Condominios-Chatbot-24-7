@@ -93,42 +93,76 @@ export default function Dashboard() {
 
   const handleCrearApartamento = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const { error } = await supabase.from("apartamentos").insert([{
-      ...apartamentoForm,
-      saldo_pendiente: 0,
-    }]);
 
-    if (error) {
-      console.error("Error al crear el apartamento:", error);
+    if (!apartamentoForm.numero.trim() || !apartamentoForm.nombre_titular.trim() || !apartamentoForm.piso.trim() || !apartamentoForm.telefono_titular.trim()) {
+      alert("Completa todos los campos del apartamento.");
       return;
     }
 
-    setIsApartamentoModalOpen(false);
-    setApartamentoForm({ numero: "", nombre_titular: "", piso: "", telefono_titular: "" });
-    await recargarApartamentos();
+    try {
+      const { error } = await supabase.from("apartamentos").insert([{
+        numero: String(apartamentoForm.numero),
+        nombre_titular: String(apartamentoForm.nombre_titular),
+        piso: String(apartamentoForm.piso),
+        telefono_titular: String(apartamentoForm.telefono_titular),
+        saldo_pendiente: 0,
+      }]);
+
+      if (error) {
+        alert("Error al guardar apartamento: " + error.message);
+        console.error(error);
+        return;
+      }
+
+      alert("Apartamento guardado con éxito");
+      setIsApartamentoModalOpen(false);
+      setApartamentoForm({ numero: "", nombre_titular: "", piso: "", telefono_titular: "" });
+      await recargarApartamentos();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo guardar el apartamento.");
+    }
   };
 
   const handleCrearCargo = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (apartamentoSeleccionado === null) return;
 
-    const { error } = await supabase.from("movimientos_financieros").insert([{
-      apartamento_id: apartamentoSeleccionado,
-      concepto: cargoForm.concepto,
-      monto: Number(cargoForm.monto),
-      estado: "Pendiente",
-      fecha_vencimiento: cargoForm.fecha_vencimiento,
-    }]);
-
-    if (error) {
-      console.error("Error al registrar el cargo:", error);
+    if (!cargoForm.concepto.trim() || !cargoForm.monto || !cargoForm.fecha_vencimiento) {
+      alert("Completa concepto, monto y fecha de vencimiento.");
       return;
     }
 
-    setIsCargoModalOpen(false);
-    setApartamentoSeleccionado(null);
-    setCargoForm({ concepto: "", monto: "", fecha_vencimiento: "" });
-    await recargarApartamentos();
+    const montoNumero = Number(cargoForm.monto);
+    if (Number.isNaN(montoNumero) || montoNumero <= 0) {
+      alert("El monto debe ser un número mayor a 0.");
+      return;
+    }
+
+    try {
+      const { error } = await supabase.from("movimientos_financieros").insert([{
+        apartamento_id: Number(apartamentoSeleccionado),
+        concepto: String(cargoForm.concepto),
+        monto: montoNumero,
+        estado: "Pendiente",
+        fecha_vencimiento: cargoForm.fecha_vencimiento,
+      }]);
+
+      if (error) {
+        alert("Error al guardar cargo: " + error.message);
+        console.error(error);
+        return;
+      }
+
+      alert("Cargo guardado con éxito");
+      setIsCargoModalOpen(false);
+      setApartamentoSeleccionado(null);
+      setCargoForm({ concepto: "", monto: "", fecha_vencimiento: "" });
+      await recargarApartamentos();
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo guardar el cargo.");
+    }
   };
 
   // Funciones de renderizado para mantener el código limpio
