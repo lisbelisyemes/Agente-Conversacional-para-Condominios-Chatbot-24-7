@@ -82,7 +82,7 @@ export default function Dashboard() {
       <>
         <div className="mb-8">
           <p className="text-sm font-semibold text-blue-600">Resumen</p>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Todo bajo control.</h2>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-slate-950">Todo esta bien.</h2>
           <p className="mt-2 text-sm text-slate-500">Monitorea la operación diaria de tu condominio desde un solo lugar.</p>
         </div>
         <section className="grid gap-4 sm:grid-cols-3" aria-label="Indicadores principales">
