@@ -50,7 +50,7 @@ export default function Dashboard() {
       
       if (activeSection === "Resumen") {
         const { data: resReportes } = await supabase.from("reportes_fallas").select("*").eq("estado", "Pendiente");
-        const { data: resAptos } = await supabase.from("apartamentos").select("saldo_pendiente");
+        const { data: resAptos } = await supabase.from("apartamentos").select("*");
         setReportes(resReportes ?? []);
         setApartamentos(resAptos ?? []);
       } 
