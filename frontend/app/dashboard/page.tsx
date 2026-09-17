@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 
@@ -33,9 +33,28 @@ export default function Dashboard() {
   const [apartamentos, setApartamentos] = useState<Apartamento[]>([]);
   const [reglamento, setReglamento] = useState<Reglamento[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isApartamentoModalOpen, setIsApartamentoModalOpen] = useState(false);
+  const [apartamentoForm, setApartamentoForm] = useState({
+    numero: "",
+    nombre_titular: "",
+    piso: "",
+    telefono_titular: "",
+  });
+  const [isCargoModalOpen, setIsCargoModalOpen] = useState(false);
+  const [apartamentoSeleccionado, setApartamentoSeleccionado] = useState<number | null>(null);
+  const [cargoForm, setCargoForm] = useState({
+    concepto: "",
+    monto: "",
+    fecha_vencimiento: "",
+  });
   
   const router = useRouter();
   const sections = ["Resumen", "Reglamento", "Estados de cuenta", "Incidencias"];
+
+  const recargarApartamentos = useCallback(async () => {
+    const { data } = await supabase.from("apartamentos").select("*").order("numero", { ascending: true });
+    setApartamentos(data ?? []);
+  }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -59,8 +78,7 @@ export default function Dashboard() {
         setReportes(data ?? []);
       } 
       else if (activeSection === "Estados de cuenta") {
-        const { data } = await supabase.from("apartamentos").select("*").order("numero", { ascending: true });
-        setApartamentos(data ?? []);
+        await recargarApartamentos();
       } 
       else if (activeSection === "Reglamento") {
         const { data } = await supabase.from("reglamento_embeddings").select("id, pagina, contenido").order("pagina", { ascending: true });
@@ -71,7 +89,47 @@ export default function Dashboard() {
     };
 
     fetchData();
-  }, [activeSection]);
+  }, [activeSection, recargarApartamentos]);
+
+  const handleCrearApartamento = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const { error } = await supabase.from("apartamentos").insert([{
+      ...apartamentoForm,
+      saldo_pendiente: 0,
+    }]);
+
+    if (error) {
+      console.error("Error al crear el apartamento:", error);
+      return;
+    }
+
+    setIsApartamentoModalOpen(false);
+    setApartamentoForm({ numero: "", nombre_titular: "", piso: "", telefono_titular: "" });
+    await recargarApartamentos();
+  };
+
+  const handleCrearCargo = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (apartamentoSeleccionado === null) return;
+
+    const { error } = await supabase.from("movimientos_financieros").insert([{
+      apartamento_id: apartamentoSeleccionado,
+      concepto: cargoForm.concepto,
+      monto: Number(cargoForm.monto),
+      estado: "Pendiente",
+      fecha_vencimiento: cargoForm.fecha_vencimiento,
+    }]);
+
+    if (error) {
+      console.error("Error al registrar el cargo:", error);
+      return;
+    }
+
+    setIsCargoModalOpen(false);
+    setApartamentoSeleccionado(null);
+    setCargoForm({ concepto: "", monto: "", fecha_vencimiento: "" });
+    await recargarApartamentos();
+  };
 
   // Funciones de renderizado para mantener el código limpio
   const renderResumen = () => {
@@ -124,9 +182,14 @@ export default function Dashboard() {
 
   const renderEstadosDeCuenta = () => (
     <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="border-b border-slate-200 px-5 py-5">
-        <h2 className="font-semibold">Saldos por Apartamento</h2>
-        <p className="mt-1 text-sm text-slate-500">Control de morosidad y cuentas por cobrar.</p>
+      <div className="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-5">
+        <div>
+          <h2 className="font-semibold">Saldos por Apartamento</h2>
+          <p className="mt-1 text-sm text-slate-500">Control de morosidad y cuentas por cobrar.</p>
+        </div>
+        <button type="button" onClick={() => setIsApartamentoModalOpen(true)} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">
+          Añadir Apartamento
+        </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm text-slate-600">
@@ -136,10 +199,11 @@ export default function Dashboard() {
               <th scope="col" className="px-5 py-3 font-medium">Titular</th>
               <th scope="col" className="px-5 py-3 font-medium">Estado</th>
               <th scope="col" className="px-5 py-3 font-medium text-right">Saldo Pendiente</th>
+              <th scope="col" className="px-5 py-3 font-medium text-right">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {isLoading ? <tr><td colSpan={4} className="px-5 py-4 text-center">Cargando cuentas...</td></tr> : apartamentos.map((apto) => (
+            {isLoading ? <tr><td colSpan={5} className="px-5 py-4 text-center">Cargando cuentas...</td></tr> : apartamentos.map((apto) => (
               <tr key={apto.id} className="hover:bg-slate-50/50">
                 <td className="px-5 py-4 font-semibold text-slate-900">{apto.numero}</td>
                 <td className="px-5 py-4">{apto.nombre_titular || 'Sin registrar'}</td>
@@ -150,6 +214,18 @@ export default function Dashboard() {
                 </td>
                 <td className="px-5 py-4 text-right font-medium text-slate-900">
                   ${Number(apto.saldo_pendiente).toFixed(2)}
+                </td>
+                <td className="px-5 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setApartamentoSeleccionado(apto.id);
+                      setIsCargoModalOpen(true);
+                    }}
+                    className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-semibold text-white hover:bg-slate-700"
+                  >
+                    Añadir Cargo
+                  </button>
                 </td>
               </tr>
             ))}
@@ -255,6 +331,41 @@ export default function Dashboard() {
           </div>
         </section>
       </div>
+
+      {isApartamentoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900">Añadir Apartamento</h2>
+            <form onSubmit={handleCrearApartamento} className="mt-5 space-y-4">
+              <input required value={apartamentoForm.numero} onChange={(event) => setApartamentoForm({ ...apartamentoForm, numero: event.target.value })} placeholder="Número" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <input required value={apartamentoForm.nombre_titular} onChange={(event) => setApartamentoForm({ ...apartamentoForm, nombre_titular: event.target.value })} placeholder="Nombre del titular" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <input required value={apartamentoForm.piso} onChange={(event) => setApartamentoForm({ ...apartamentoForm, piso: event.target.value })} placeholder="Piso" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <input required value={apartamentoForm.telefono_titular} onChange={(event) => setApartamentoForm({ ...apartamentoForm, telefono_titular: event.target.value })} placeholder="Teléfono del titular" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsApartamentoModalOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Cancelar</button>
+                <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isCargoModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900">Añadir Cargo</h2>
+            <form onSubmit={handleCrearCargo} className="mt-5 space-y-4">
+              <input required value={cargoForm.concepto} onChange={(event) => setCargoForm({ ...cargoForm, concepto: event.target.value })} placeholder="Concepto" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <input required min="0" step="0.01" type="number" value={cargoForm.monto} onChange={(event) => setCargoForm({ ...cargoForm, monto: event.target.value })} placeholder="Monto" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <input required type="date" value={cargoForm.fecha_vencimiento} onChange={(event) => setCargoForm({ ...cargoForm, fecha_vencimiento: event.target.value })} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" />
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsCargoModalOpen(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700">Cancelar</button>
+                <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Guardar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
