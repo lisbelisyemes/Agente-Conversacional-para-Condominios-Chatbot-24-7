@@ -11,6 +11,15 @@ type Apartamento = {
   saldo_pendiente: number;
 };
 
+type MovimientoFinanciero = {
+  id: number;
+  concepto: string;
+  monto: number;
+  mes: string;
+  estado: string;
+  fecha_vencimiento: string | null;
+};
+
 type ReporteFalla = {
   id: number;
   descripcion: string;
@@ -48,6 +57,10 @@ export default function Dashboard() {
     mes: "",
     fecha_vencimiento: "",
   });
+  const [isDetalleModalOpen, setIsDetalleModalOpen] = useState(false);
+  const [apartamentoDetalle, setApartamentoDetalle] = useState<Apartamento | null>(null);
+  const [movimientosDetalle, setMovimientosDetalle] = useState<MovimientoFinanciero[]>([]);
+  const [isLoadingDetalle, setIsLoadingDetalle] = useState(false);
   
   const router = useRouter();
   const sections = ["Resumen", "Reglamento", "Estados de cuenta", "Incidencias"];
@@ -192,6 +205,62 @@ export default function Dashboard() {
     }
   };
 
+  const recalcularSaldoApartamento = async (apartamentoId: number) => {
+    const { data: pendientes } = await supabase
+      .from("movimientos_financieros")
+      .select("monto")
+      .eq("apartamento_id", apartamentoId)
+      .eq("estado", "Pendiente");
+
+    const nuevoSaldo = (pendientes ?? []).reduce((acc, movimiento) => acc + Number(movimiento.monto || 0), 0);
+
+    await supabase.from("apartamentos").update({ saldo_pendiente: nuevoSaldo }).eq("id", apartamentoId);
+  };
+
+  const abrirDetalleApartamento = async (apto: Apartamento) => {
+    setApartamentoDetalle(apto);
+    setIsDetalleModalOpen(true);
+    setIsLoadingDetalle(true);
+
+    const { data } = await supabase
+      .from("movimientos_financieros")
+      .select("id, concepto, monto, mes, estado, fecha_vencimiento")
+      .eq("apartamento_id", apto.id)
+      .order("created_at", { ascending: false });
+
+    setMovimientosDetalle(data ?? []);
+    setIsLoadingDetalle(false);
+  };
+
+  const marcarComoPagado = async (movimientoId: number, apartamentoId: number) => {
+    try {
+      const { error } = await supabase
+        .from("movimientos_financieros")
+        .update({ estado: "Pagado" })
+        .eq("id", movimientoId);
+
+      if (error) {
+        alert("Error al marcar como pagado: " + error.message);
+        console.error(error);
+        return;
+      }
+
+      await recalcularSaldoApartamento(apartamentoId);
+
+      const { data } = await supabase
+        .from("movimientos_financieros")
+        .select("id, concepto, monto, mes, estado, fecha_vencimiento")
+        .eq("apartamento_id", apartamentoId)
+        .order("created_at", { ascending: false });
+      setMovimientosDetalle(data ?? []);
+
+      await recargarApartamentos();
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo marcar el cargo como pagado.");
+    }
+  };
+
   // Funciones de renderizado para mantener el código limpio
   const renderResumen = () => {
     const deudaTotal = apartamentos.reduce((acc, apto) => acc + Number(apto.saldo_pendiente || 0), 0);
@@ -277,6 +346,13 @@ export default function Dashboard() {
                   ${Number(apto.saldo_pendiente).toFixed(2)}
                 </td>
                 <td className="px-5 py-4 text-right">
+                  <button
+                    type="button"
+                    onClick={() => abrirDetalleApartamento(apto)}
+                    className="mr-2 rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                  >
+                    Ver movimientos
+                  </button>
                   <button
                     type="button"
                     onClick={() => {
@@ -444,6 +520,50 @@ export default function Dashboard() {
                 <button type="submit" className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700">Guardar</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isDetalleModalOpen && apartamentoDetalle && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+            <h2 className="text-lg font-semibold text-slate-900">
+              Movimientos de {apartamentoDetalle.numero} — {apartamentoDetalle.nombre_titular}
+            </h2>
+            <div className="mt-4 max-h-80 space-y-3 overflow-y-auto">
+              {isLoadingDetalle ? (
+                <p className="text-sm text-slate-500">Cargando movimientos...</p>
+              ) : movimientosDetalle.length === 0 ? (
+                <p className="text-sm text-slate-500">Este apartamento no tiene movimientos registrados.</p>
+              ) : (
+                movimientosDetalle.map((mov) => (
+                  <div key={mov.id} className="flex items-center justify-between rounded-lg border border-slate-200 px-4 py-3">
+                    <div>
+                      <p className="text-sm font-semibold text-slate-900">{mov.concepto} — {mov.mes}</p>
+                      <p className="text-xs text-slate-500">${Number(mov.monto).toFixed(2)} · {mov.estado}</p>
+                    </div>
+                    {mov.estado === "Pendiente" && (
+                      <button
+                        type="button"
+                        onClick={() => marcarComoPagado(mov.id, apartamentoDetalle.id)}
+                        className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700"
+                      >
+                        Marcar como pagado
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+            <div className="mt-5 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsDetalleModalOpen(false)}
+                className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700"
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
       )}
