@@ -156,6 +156,31 @@ export default function Dashboard() {
         return;
       }
 
+      const { data: movimientosPendientes, error: errorSuma } = await supabase
+        .from("movimientos_financieros")
+        .select("monto")
+        .eq("apartamento_id", Number(apartamentoSeleccionado))
+        .eq("estado", "Pendiente");
+
+      if (errorSuma) {
+        alert("Error al recalcular saldo pendiente: " + errorSuma.message);
+        console.error(errorSuma);
+        return;
+      }
+
+      const saldoPendiente = (movimientosPendientes ?? []).reduce((acc, movimiento) => acc + Number(movimiento.monto || 0), 0);
+
+      const { error: errorUpdate } = await supabase
+        .from("apartamentos")
+        .update({ saldo_pendiente: Number(saldoPendiente) })
+        .eq("id", Number(apartamentoSeleccionado));
+
+      if (errorUpdate) {
+        alert("Error al actualizar saldo del apartamento: " + errorUpdate.message);
+        console.error(errorUpdate);
+        return;
+      }
+
       alert("Cargo guardado con éxito");
       setIsCargoModalOpen(false);
       setApartamentoSeleccionado(null);
