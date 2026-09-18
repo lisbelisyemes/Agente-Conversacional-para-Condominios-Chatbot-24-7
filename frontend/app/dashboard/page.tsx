@@ -26,6 +26,8 @@ type ReporteFalla = {
   ubicacion: string;
   estado: string;
   fecha: string;
+  urgente: boolean;
+  telefono_reporta: string;
 };
 
 type Reglamento = {
@@ -88,7 +90,11 @@ export default function Dashboard() {
         setApartamentos(resAptos ?? []);
       } 
       else if (activeSection === "Incidencias") {
-        const { data } = await supabase.from("reportes_fallas").select("*").order("fecha", { ascending: false });
+        const { data } = await supabase
+          .from("reportes_fallas")
+          .select("*")
+          .order("urgente", { ascending: false })
+          .order("fecha", { ascending: false });
         setReportes(data ?? []);
       } 
       else if (activeSection === "Estados de cuenta") {
@@ -202,6 +208,31 @@ export default function Dashboard() {
     } catch (error) {
       console.error(error);
       alert("No se pudo guardar el cargo.");
+    }
+  };
+
+  const actualizarEstadoReporte = async (reporteId: number, nuevoEstado: string) => {
+    try {
+      const { error } = await supabase
+        .from("reportes_fallas")
+        .update({ estado: nuevoEstado })
+        .eq("id", reporteId);
+
+      if (error) {
+        alert("Error al actualizar el estado: " + error.message);
+        console.error(error);
+        return;
+      }
+
+      const { data } = await supabase
+        .from("reportes_fallas")
+        .select("*")
+        .order("urgente", { ascending: false })
+        .order("fecha", { ascending: false });
+      setReportes(data ?? []);
+    } catch (err) {
+      console.error(err);
+      alert("No se pudo actualizar el estado.");
     }
   };
 
@@ -384,17 +415,45 @@ export default function Dashboard() {
           const fechaFormateada = new Date(reporte.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute:'2-digit' });
           
           return (
-            <div key={reporte.id} className="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between hover:bg-slate-50/50 transition-colors">
+            <div key={reporte.id} className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between transition-colors ${reporte.urgente ? "bg-red-50/50 hover:bg-red-50" : "hover:bg-slate-50/50"}`}>
               <div className="flex flex-col">
-                <p className="font-semibold text-slate-800">{reporte.descripcion}</p>
-                <div className="mt-1 flex items-center gap-3 text-xs text-slate-500">
+                <div className="flex items-center gap-2">
+                  {reporte.urgente && (
+                    <span className="rounded-full bg-red-600 px-2 py-1 text-xs font-bold text-white">
+                      🚨 URGENTE
+                    </span>
+                  )}
+                  <p className="font-semibold text-slate-800">{reporte.descripcion}</p>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-slate-500">
                   <span>📍 {reporte.ubicacion}</span>
                   <span>📅 {fechaFormateada}</span>
+                  <span>📞 {reporte.telefono_reporta}</span>
                 </div>
               </div>
-              <span className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass}`}>
-                {reporte.estado}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className={`w-fit rounded-full px-2.5 py-1 text-xs font-semibold ${statusClass}`}>
+                  {reporte.estado}
+                </span>
+                {reporte.estado !== "Resuelto" && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => actualizarEstadoReporte(reporte.id, "Asignado")}
+                      className="rounded-lg border border-blue-300 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-50"
+                    >
+                      Asignar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => actualizarEstadoReporte(reporte.id, "Resuelto")}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700"
+                    >
+                      Resolver
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           );
         })}
