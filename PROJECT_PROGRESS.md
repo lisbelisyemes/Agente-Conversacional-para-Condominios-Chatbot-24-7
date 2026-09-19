@@ -77,10 +77,10 @@ Estado actual conocido:
 | Ruta | Página | Estado |
 |------|--------|--------|
 | `/` | Landing Page pública | ✅ Completada |
-| `/login` | Login administrativo | ✅ Implementado (rediseño visual: ⬜ Pendiente, ETAPA 3) |
+| `/login` | Login administrativo | ✅ Implementado y rediseñado (ETAPA 3) |
 | `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual: ⬜ Pendiente, ETAPA 4) |
 
-> ETAPA 1 (reorganización) y ETAPA 2 (Landing) completadas y verificadas.
+> ETAPA 1 (reorganización), ETAPA 2 (Landing) y ETAPA 3 (rediseño del Login) completadas y verificadas.
 
 ---
 
@@ -141,24 +141,26 @@ Debe incluir:
 
 ### ETAPA 3 — Rediseño del Login
 
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completada (2026-09-19)
 - **Objetivo:** Convertir el Login en una pantalla profesional y coherente con la identidad de Condominio Inteligente.
+- **Archivos modificados:** `app/login/page.tsx` (rediseño visual; lógica de autenticación intacta).
+- **Nota:** No se crearon archivos nuevos, no se instalaron dependencias, no se modificó Supabase.
 
 Conservar:
 
-- [ ] Supabase Auth
-- [ ] Validaciones
-- [ ] Manejo de errores
-- [ ] Estado de carga
-- [ ] Redirección al Dashboard
+- [x] Supabase Auth
+- [x] Validaciones
+- [x] Manejo de errores
+- [x] Estado de carga
+- [x] Redirección al Dashboard
 
 Mejorar:
 
-- [ ] Diseño
-- [ ] Identidad visual
-- [ ] Integración visual de Connie
-- [ ] Responsive design
-- [ ] Accesibilidad
+- [x] Diseño
+- [x] Identidad visual
+- [x] Integración visual de Connie
+- [x] Responsive design
+- [x] Accesibilidad
 
 ### ETAPA 4 — Rediseño del Dashboard
 
@@ -308,6 +310,16 @@ Existen dos experiencias principales:
 
 Ajuste posterior (2026-09-19): se configuró el enlace real de WhatsApp de Connie (`WHATSAPP_URL = "https://wa.me/584126212092"` en `components/ConnieSection.tsx`); el botón "Hablar con Connie por WhatsApp" quedó activo. TypeScript verificado sin errores.
 
+### ETAPA 3 — Rediseño del Login (2026-09-19)
+
+- Rediseñado `app/login/page.tsx` con pantalla dividida en dos zonas en escritorio.
+- Lado izquierdo (oculto en móvil): fondo `brand-900` con degradados, logo, imagen de Connie, mensaje "Tu condominio, siempre bajo control." y elementos visuales de seguridad/automatización/organización. No es un dashboard funcional.
+- Lado derecho: tarjeta con "Bienvenido de nuevo", subtítulo, campos Email y Contraseña con iconos, botón "Iniciar sesión" con estado de carga ("Iniciando sesión..." con spinner y deshabilitado), y enlace "← Volver al inicio" hacia `/`.
+- Se agregó "¿Necesitas ayuda?" únicamente como elemento visual (sin sistema de recuperación inventado).
+- Se conservó INALTERADA la lógica de autenticación: validaciones, `supabase.auth.signInWithPassword()`, manejo de errores, estado de carga y redirección `router.push("/dashboard")`.
+- Sin nuevas dependencias; iconos SVG inline. Accesibilidad mantenida: labels asociados, `aria-invalid`, `role="alert"`, `autocomplete`, tipos `email`/`password`, estados de foco.
+- No se modificaron `app/page.tsx` (Landing), `app/dashboard/page.tsx`, Supabase, n8n ni WhatsApp.
+
 ---
 
 ## 10. Archivos principales
@@ -356,6 +368,24 @@ Estado de la ETAPA 2:
 - [x] Sin scroll horizontal en móvil (secciones con `overflow-x` controlado; ajuste final de `overflow-hidden` en sección de Connie; se recomienda una revisión visual final en navegador)
 - [x] No se rompió funcionalidad existente (Login y Dashboard intactos; únicos cambios: metadata y globals.css)
 
+Estado de la ETAPA 3:
+
+- [x] `npm run build` ✅ (2026-09-19 — rutas `/`, `/login`, `/dashboard` prerenderizadas)
+- [x] TypeScript sin errores (durante el build)
+- [x] ESLint sin errores sobre `app/login`
+- [x] `/` → Landing sigue funcionando (200)
+- [x] `/login` → rediseño verificado en HTML prerenderizado ("Bienvenido de nuevo", "Volver al inicio", subtítulo, formulario)
+- [x] Enlace de la Landing "Acceder al portal" → `/login` (verificado en ETAPA 2; rutas intactas)
+- [x] Lógica de login conservada por revisión de código (mismos hooks, validaciones, `signInWithPassword`, manejo de error, `router.push("/dashboard")`)
+- [x] Redirección sin sesión en `/dashboard` → `/login` (heredada de ETAPA 1, sin cambios)
+- [x] Usuario inválido permanece en `/login` (lógica `if (error) { setErrors(...); return; }` intacta)
+- [x] `/images/connie.png` se carga (200, 225 KB; referenciada por `next/image` en el login)
+- [x] Sin scroll horizontal en móvil (grid de una columna; panel izquierdo oculto en móvil; tarjeta contenida en `max-w-md`)
+- [x] Responsive design (dos columnas en escritorio, una columna en móvil, botones/inputs con toque cómodo)
+- [x] No se modificó Supabase (solo frontend; sin SQL, sin escrituras)
+- [x] No se modificó n8n ni WhatsApp
+- [x] No se modificó el Dashboard
+
 Verificaciones generales pendientes de confirmar en entorno real:
 
 - [ ] `npm run build` sin variables temporales, una vez exista un `.env` con las credenciales reales de Supabase.
@@ -370,8 +400,7 @@ Verificaciones generales pendientes de confirmar en entorno real:
 Actualmente:
 
 - No existe archivo `.env` en el proyecto; sin él, `npm run build`/`next dev` fallan por falta de `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. (Pendiente ambiental; no modificar credenciales sin autorización.)
-- Falta una revisión visual final de la Landing en navegador (animaciones del chat, scroll suave, menú móvil, contraste).
-- Login necesita rediseño visual (ETAPA 3).
+- Falta una revisión visual final de la Landing y del Login en navegador (animaciones, scroll suave, menú móvil, contraste).
 - Dashboard necesita rediseño visual (ETAPA 4).
 - Falta confirmar si `public/images/connie.png` es el asset definitivo de Connie.
 
