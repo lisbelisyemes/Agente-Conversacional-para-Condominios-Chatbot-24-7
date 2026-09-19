@@ -55,8 +55,8 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900">
-      <div className="grid min-h-screen lg:grid-cols-[1.05fr_1fr]">
-        <aside className="relative hidden overflow-hidden bg-brand-900 lg:flex">
+      <div className="flex min-h-screen flex-col lg:grid lg:grid-cols-[1.05fr_1fr]">
+        <aside className="relative flex flex-col overflow-hidden bg-brand-900">
           <div
             className="pointer-events-none absolute inset-0"
             aria-hidden="true"
@@ -65,7 +65,7 @@ export default function LoginPage() {
                 "radial-gradient(42rem 32rem at 12% 0%, rgba(142,182,155,0.22), transparent 60%), radial-gradient(36rem 28rem at 95% 100%, rgba(59,130,246,0.14), transparent 60%)",
             }}
           />
-          <div className="relative flex w-full flex-col px-12 py-12 xl:px-16">
+          <div className="relative flex flex-col gap-6 px-5 py-7 sm:px-8 lg:gap-0 lg:px-12 lg:py-12 xl:px-16">
             <div className="flex items-center gap-3">
               <span className="grid size-11 place-items-center rounded-xl bg-white/10 text-brand-100">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-6">
@@ -80,10 +80,10 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <div className="my-auto flex flex-col items-start gap-6 py-10">
-              <div className="relative">
+            <div className="flex items-center gap-5 lg:my-auto lg:flex-col lg:items-start lg:gap-6 lg:py-10">
+              <div className="relative shrink-0">
                 <div
-                  className="absolute -inset-5 rounded-[3rem] bg-gradient-to-tr from-brand-700/60 via-brand-500/40 to-blue-500/20 blur-2xl"
+                  className="absolute -inset-3 rounded-[2rem] bg-gradient-to-tr from-brand-700/60 via-brand-500/40 to-blue-500/20 blur-xl lg:-inset-5 lg:rounded-[3rem] lg:blur-2xl"
                   aria-hidden="true"
                 />
                 <Image
@@ -92,22 +92,24 @@ export default function LoginPage() {
                   width={1280}
                   height={1280}
                   priority
-                  className="animate-float-soft relative w-44 rounded-[2rem] border border-white/15 object-cover shadow-2xl shadow-black/40 xl:w-52"
+                  className="animate-float-soft relative w-28 rounded-2xl border border-white/15 object-cover shadow-xl shadow-black/40 sm:w-32 lg:w-44 lg:rounded-[2rem] lg:shadow-2xl xl:w-52"
                 />
-                <div className="absolute -right-4 bottom-4 flex items-center gap-1.5 rounded-full bg-emerald-500/95 px-3 py-1.5 text-[11px] font-semibold text-white shadow-lg">
+                <div className="absolute -right-3 bottom-2 flex items-center gap-1.5 rounded-full bg-emerald-500/95 px-2.5 py-1 text-[10px] font-semibold text-white shadow-lg lg:-right-4 lg:bottom-4 lg:px-3 lg:py-1.5 lg:text-[11px]">
                   <span className="size-1.5 rounded-full bg-white" aria-hidden="true" />
                   Disponible 24/7
                 </div>
               </div>
 
-              <h1 className="max-w-md text-3xl font-extrabold leading-tight tracking-tight text-white xl:text-4xl">
-                Tu condominio, siempre bajo control.
-              </h1>
-              <p className="max-w-md text-brand-200">
-                Administra pagos, incidencias y la información de tu comunidad desde un solo lugar.
-              </p>
+              <div className="min-w-0">
+                <h1 className="max-w-md text-2xl font-extrabold leading-tight tracking-tight text-white lg:text-3xl xl:text-4xl">
+                  Tu condominio, siempre bajo control.
+                </h1>
+                <p className="mt-2 max-w-md text-sm text-brand-200 lg:mt-4 lg:text-base">
+                  Administra pagos, incidencias y la información de tu comunidad desde un solo lugar.
+                </p>
+              </div>
 
-              <ul className="mt-2 space-y-3 text-sm text-brand-200">
+              <ul className="mt-2 hidden space-y-3 text-sm text-brand-200 lg:block">
                 <li className="flex items-center gap-3">
                   <span className="grid size-7 place-items-center rounded-lg bg-white/10 text-brand-100">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-4">
@@ -138,11 +140,11 @@ export default function LoginPage() {
               </ul>
             </div>
 
-            <p className="text-xs text-brand-300/80">Condominio Inteligente · Asistente de Condominio 24/7</p>
+            <p className="text-xs text-brand-300/80 lg:mt-auto">Condominio Inteligente · Asistente de Condominio 24/7</p>
           </div>
         </aside>
 
-        <section className="relative flex items-center justify-center bg-brand-50 px-4 py-10 lg:bg-slate-50">
+        <section className="relative flex flex-1 items-center justify-center bg-brand-50 px-4 py-10 lg:bg-slate-50">
           <div
             className="animate-fade-up pointer-events-none absolute inset-0"
             aria-hidden="true"
@@ -167,19 +169,6 @@ export default function LoginPage() {
               className="animate-fade-up mt-6 rounded-3xl border border-brand-100 bg-white p-8 shadow-2xl shadow-brand-900/10 sm:p-10"
               style={{ animationDelay: "140ms" }}
             >
-              <div className="mb-8 lg:hidden">
-                <div className="flex items-center gap-2.5">
-                  <span className="grid size-10 place-items-center rounded-xl bg-brand-900 text-white" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="size-5">
-                      <path d="M3 10.5 12 3l9 7.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M5 9.5V21h14V9.5" strokeLinecap="round" strokeLinejoin="round" />
-                      <path d="M9 21v-6h6v6" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </span>
-                  <span className="text-base font-bold tracking-tight text-brand-950">Condominio Inteligente</span>
-                </div>
-              </div>
-
               <h1 id="login-title" className="text-3xl font-extrabold tracking-tight text-brand-950">
                 Bienvenido de nuevo
               </h1>
