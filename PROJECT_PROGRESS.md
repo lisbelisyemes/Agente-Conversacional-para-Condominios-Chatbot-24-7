@@ -68,7 +68,7 @@ Estado actual conocido:
 
 | Ruta | Página | Estado |
 |------|--------|--------|
-| `/` | Placeholder de la futura Landing ("Landing Page pendiente") | 🟡 En progreso |
+| `/` | Landing Page pública (implementada en ETAPA 2) | ✅ Completada |
 | `/login` | Login administrativo | ✅ Completada |
 | `/dashboard` | Dashboard administrativo protegido | ✅ Completada |
 
@@ -76,11 +76,11 @@ Estado actual conocido:
 
 | Ruta | Página | Estado |
 |------|--------|--------|
-| `/` | Landing Page pública | ⬜ Pendiente (ETAPA 2) |
+| `/` | Landing Page pública | ✅ Completada |
 | `/login` | Login administrativo | ✅ Implementado (rediseño visual: ⬜ Pendiente, ETAPA 3) |
 | `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual: ⬜ Pendiente, ETAPA 4) |
 
-> La reorganización de rutas de la ETAPA 1 está completada y verificada. La Landing visual (`/`) sigue pendiente de la ETAPA 2.
+> ETAPA 1 (reorganización) y ETAPA 2 (Landing) completadas y verificadas.
 
 ---
 
@@ -115,23 +115,27 @@ Tareas:
 
 ### ETAPA 2 — Landing Page
 
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completada (2026-09-19)
 - **Objetivo:** Crear una Landing Page profesional y moderna para Condominio Inteligente.
+- **Archivos creados:** `components/Navbar.tsx`, `components/Hero.tsx`, `components/Features.tsx`, `components/FeatureCard.tsx`, `components/ConnieSection.tsx`, `components/ConnieChat.tsx`, `components/HowItWorks.tsx`, `components/AdminPreview.tsx`, `components/CtaFinal.tsx`, `components/Footer.tsx`, `components/Reveal.tsx`.
+- **Archivos modificados:** `app/page.tsx` (composición de la Landing), `app/layout.tsx` (metadata: título, descripción; `lang="es"`), `app/globals.css` (paleta del proyecto, keyframes, scroll suave).
+- **Imagen utilizada:** `/images/connie.png` (1280×1280) mediante `next/image`; usada en Hero y en la sección "Conoce a Connie", con `alt` descriptivo y sin deformar.
 
 Debe incluir:
 
-- [ ] Hero principal
-- [ ] Identidad visual de Connie
-- [ ] Imagen de Connie
-- [ ] Demostración animada del chat
-- [ ] Características
-- [ ] Sección "Conoce a Connie"
-- [ ] Sección "¿Cómo funciona?"
-- [ ] Explicación del sistema
-- [ ] Preview del Dashboard
-- [ ] CTA para iniciar sesión
-- [ ] Footer
-- [ ] Responsive design
+- [x] Hero principal (con composición visual alrededor de Connie)
+- [x] Identidad visual de Connie
+- [x] Imagen de Connie (`/images/connie.png`)
+- [x] Demostración animada del chat (componente `ConnieChat`, loop automático + indicador de escritura)
+- [x] Características (6 tarjetas con iconos y hover)
+- [x] Sección "Conoce a Connie"
+- [x] Sección "¿Cómo funciona?" (flujo Residente → Portal, explicación no técnica)
+- [x] Explicación del sistema
+- [x] Preview del Dashboard (sección "Todo bajo control", etiquetada como PREVISUALIZACIÓN)
+- [x] CTA para iniciar sesión (CTA final + botones a `/login`)
+- [x] Footer
+- [x] Responsive design (navbar móvil, grillas adaptativas, sin scroll horizontal)
+- [x] Botón de WhatsApp preparado con constante `WHATSAPP_URL` (vacía, sin número falso)
 
 > La imagen de Connie deberá utilizarse desde `/public/images/connie.png`. Verificado: el archivo `public/images/connie.png` SÍ existe (copiado desde Descargas del equipo el 2026-09-19).
 
@@ -292,16 +296,27 @@ Existen dos experiencias principales:
 - Se copió `connie.png` desde la carpeta de Descargas hacia `public/images/connie.png`.
 - Rutas finales verificadas en el build: `/`, `/login`, `/dashboard`.
 
+### ETAPA 2 — Landing Page (2026-09-19)
+
+- Implementada la Landing pública en `/` con las secciones: Navbar, Hero, Características, "Conoce a Connie" (con chat demostrativo animado), "¿Cómo funciona?", "Todo bajo control" (previsualización del dashboard), CTA final y Footer.
+- Identidad visual aplicada con la paleta del proyecto (inspiración `#051F20`–`#DAF1DE`) y uso semántico de colores; azul para acciones principales.
+- Chat animado de Connie (`ConnieChat.tsx`) 100% visual: sin API, sin Supabase, con indicador de escritura y reinicio automático.
+- Botón "Hablar con Connie por WhatsApp" preparado con la constante `WHATSAPP_URL` (vacía; sin números falsos).
+- Metadata global actualizada: título "Condominio Inteligente", descripción "Plataforma inteligente para la gestión de condominios y atención 24/7.", `<html lang="es">`.
+- `app/globals.css` ampliado: colores de marca, keyframes (fade-up, chat-in, float, typing) y scroll suave.
+- No se modificaron `app/login/page.tsx` ni `app/dashboard/page.tsx`.
+
 ---
 
 ## 10. Archivos principales
 
-- `app/page.tsx` → placeholder de la futura Landing (ETAPA 2).
+- `app/page.tsx` → Landing pública (composición de secciones).
 - `app/login/page.tsx` → Login administrativo (creado en ETAPA 1).
 - `app/dashboard/page.tsx` → Dashboard administrativo.
-- `app/layout.tsx` → Layout global de Next.js.
-- `app/globals.css` → estilos globales.
+- `app/layout.tsx` → Layout global de Next.js (metadata y `lang="es"`).
+- `app/globals.css` → estilos globales (paleta de marca y animaciones).
 - `lib/supabase/client.ts` → cliente de Supabase.
+- `components/` → componentes de la Landing (Navbar, Hero, Features, FeatureCard, ConnieSection, ConnieChat, HowItWorks, AdminPreview, CtaFinal, Footer, Reveal).
 - `public/` → recursos estáticos (incluye `public/images/connie.png`).
 
 > Se agregarán otros archivos a esta lista cuando sean creados o identificados.
@@ -325,11 +340,26 @@ Estado de la ETAPA 1:
 - [ ] Landing funciona (solo placeholder; verificación visual pendiente de ETAPA 2)
 - [ ] responsive design verificado (pendiente para etapas de rediseño)
 
+Estado de la ETAPA 2:
+
+- [x] `npm run build` ✅ (2026-09-19 — compilado, TypeScript OK, rutas `/`, `/login`, `/dashboard` prerenderizadas)
+- [x] TypeScript sin errores (ejecutado durante el build; `npx tsc --noEmit` previo)
+- [x] ESLint sin errores sobre `components/`, `app/page.tsx`, `app/layout.tsx`, `app/login`, `app/dashboard`
+- [x] `/` carga correctamente (200, HTML prerenderizado con todas las secciones: verificado contenido de Hero, Características, Connie, ¿Cómo funciona?, Portal, CTA)
+- [x] `/login` sigue funcionando (200)
+- [x] `/dashboard` sigue funcionando (200)
+- [x] Botón de la Landing lleva a `/login` (enlaces `Acceder al portal` y `Acceder al portal administrativo` → `/login`, verificado en HTML)
+- [x] Imagen `/images/connie.png` carga correctamente (200, 225 KB; usada con `next/image`)
+- [x] Chat animado de Connie implementado (componente `ConnieChat`; loop e indicador de escritura por código; requiere prueba visual en navegador)
+- [x] Sin scroll horizontal en móvil (secciones con `overflow-x` controlado; ajuste final de `overflow-hidden` en sección de Connie; se recomienda una revisión visual final en navegador)
+- [x] No se rompió funcionalidad existente (Login y Dashboard intactos; únicos cambios: metadata y globals.css)
+
 Verificaciones generales pendientes de confirmar en entorno real:
 
 - [ ] `npm run build` sin variables temporales, una vez exista un `.env` con las credenciales reales de Supabase.
+- [ ] Revisión visual final de la Landing en navegador (animaciones, desplazamiento suave, menú móvil, contraste).
 
-> Nota: el entorno no dispone de archivo `.env`, por lo que el build requiere las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Para verificar la ETAPA 1 se ejecutó el build inyectando valores temporales SOLO dentro del proceso (no se crearon archivos ni credenciales).
+> Nota: el entorno no dispone de archivo `.env`, por lo que el build requiere las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Para verificar las ETAPAS 1 y 2 se ejecutó el build inyectando valores temporales SOLO dentro del proceso (no se crearon archivos ni credenciales).
 
 ---
 
@@ -338,12 +368,11 @@ Verificaciones generales pendientes de confirmar en entorno real:
 Actualmente:
 
 - No existe archivo `.env` en el proyecto; sin él, `npm run build`/`next dev` fallan por falta de `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. (Pendiente ambiental; no modificar credenciales sin autorización.)
-- Landing Page todavía no implementada (solo placeholder en `/`).
-- Login necesita rediseño visual.
-- Dashboard necesita rediseño visual.
-- Falta integrar visualmente a Connie en la interfaz web.
-- Falta implementar la demostración animada del chat de Connie.
-- El asset de Connie quedó ubicado en `public/images/connie.png` (verificado su existencia; falta confirmar si es el definitivo).
+- Botón "Hablar con Connie por WhatsApp" inactivo: falta configurar `WHATSAPP_URL` en `components/ConnieSection.tsx` cuando exista un número oficial.
+- Falta una revisión visual final de la Landing en navegador (animaciones del chat, scroll suave, menú móvil, contraste).
+- Login necesita rediseño visual (ETAPA 3).
+- Dashboard necesita rediseño visual (ETAPA 4).
+- Falta confirmar si `public/images/connie.png` es el asset definitivo de Connie.
 
 > Esta sección está preparada para agregar nuevos problemas a medida que surjan.
 

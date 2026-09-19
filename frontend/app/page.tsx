@@ -1,13 +1,23 @@
+import Navbar from "@/components/Navbar";
+import Hero from "@/components/Hero";
+import Features from "@/components/Features";
+import ConnieSection from "@/components/ConnieSection";
+import HowItWorks from "@/components/HowItWorks";
+import AdminPreview from "@/components/AdminPreview";
+import CtaFinal from "@/components/CtaFinal";
+import Footer from "@/components/Footer";
+
 export default function LandingPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-8">
-      <section className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl" aria-labelledby="landing-title">
-        <h1 id="landing-title" className="text-3xl font-bold text-slate-800">Condominio Inteligente</h1>
-        <p className="mt-4 text-slate-500">Landing Page pendiente</p>
-        <p className="mt-2 text-sm text-slate-400">
-          Esta ruta se convertirá en la página pública en la ETAPA 2.
-        </p>
-      </section>
+    <main className="min-h-screen bg-white text-slate-900">
+      <Navbar />
+      <Hero />
+      <Features />
+      <ConnieSection />
+      <HowItWorks />
+      <AdminPreview />
+      <CtaFinal />
+      <Footer />
     </main>
   );
 }
