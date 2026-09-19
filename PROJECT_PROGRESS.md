@@ -78,9 +78,9 @@ Estado actual conocido:
 |------|--------|--------|
 | `/` | Landing Page pública | ✅ Completada |
 | `/login` | Login administrativo | ✅ Implementado y rediseñado (ETAPA 3) |
-| `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual completado, ETAPA 4) |
+| `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual ETAPA 4; UX móvil optimizada, ETAPA 5) |
 
-> ETAPA 1 (reorganización), ETAPA 2 (Landing), ETAPA 3 (rediseño del Login) y ETAPA 4 (rediseño del Dashboard) completadas y verificadas.
+> ETAPA 1 (reorganización), ETAPA 2 (Landing), ETAPA 3 (rediseño del Login), ETAPA 4 (rediseño del Dashboard) y ETAPA 5 (optimización móvil del Dashboard) completadas y verificadas.
 
 ---
 
@@ -190,6 +190,25 @@ Mejorar:
 - [x] Jerarquía visual
 - [x] Responsive design
 - [x] Identidad visual
+
+### ETAPA 5 — Optimización exclusiva de experiencia móvil del Dashboard
+
+- **Estado:** ✅ Completada (2026-09-19)
+- **Objetivo:** Optimizar exclusivamente la experiencia móvil del Dashboard, conservando el escritorio y sin añadir funcionalidades.
+- **Archivos modificados:** `app/dashboard/page.tsx`, `components/StatCard.tsx`.
+- **Archivos creados:** ninguno.
+- **Nota:** Sin dependencias nuevas, sin cambios en Landing, Login, `globals.css`, Supabase ni base de datos.
+
+Mejoras de UX móvil realizadas:
+
+- [x] Navegación móvil: menú hamburguesa + drawer lateral (ya existían de ETAPA 4); se eliminaron las pestañas de navegación móvil del header.
+- [x] Header compacto en móvil: paddings reducidos (`px-3 py-3`), "Panel administrativo" oculto en móvil (`sm:block`), título con `truncate`, botón hamburguesa y avatar `size-9`.
+- [x] Optimización de tarjetas (`StatCard`): padding `p-4` / `sm:p-5`, chip `size-8` / `sm:size-9`, valor `text-lg` con `truncate` / `sm:text-2xl`, hint oculto en móvil (`hidden sm:block`).
+- [x] Resumen: grilla `grid-cols-2` en móvil para las 6 tarjetas (antes 1 columna).
+- [x] Ajustes responsive: paddings compactos `px-4 py-4` con breakpoints `sm:*` en Reglamento, Incidencias y Estados de cuenta.
+- [x] Tabla de saldos: `min-w-[640px]` dentro de `overflow-x-auto` (scroll horizontal controlado en móvil).
+- [x] Modales: bottom-sheet en móvil (`items-end`, sobre `sm:items-center`), `max-h-[92vh]` con scroll interno.
+- [x] Sin scroll horizontal y sin pérdida de funcionalidad.
 
 ---
 
@@ -335,6 +354,19 @@ Ajuste posterior (2026-09-19): se configuró el enlace real de WhatsApp de Conni
 - Paleta de marca aplicada (`brand-950` a `brand-50`), respetando el uso semántico del color y sin sobresaturar de verde.
 - Sin cambios en Supabase, SQL, base de datos, n8n, WhatsApp, Docker, Cloudflare ni Meta Developers.
 
+### ETAPA 5 — Optimización de experiencia móvil del Dashboard (2026-09-19)
+
+- Actualizados únicamente `app/dashboard/page.tsx` y `components/StatCard.tsx` con mejoras de UX/UI responsive de exclusivo alcance móvil.
+- Eliminadas las pestañas de navegación móvil del header (la navegación en móvil queda a cargo del botón hamburguesa/drawer existente).
+- `StatCard` re-compactado en móvil (padding, chip, tipografía, hint oculto en `sm:`) para grillas de 2 columnas.
+- Resumen del Dashboard con grilla `grid-cols-2` en móvil.
+- Tabla de "Saldos por Apartamento" con `min-w-[640px]` para scroll horizontal dentro de `overflow-x-auto`.
+- Modales del Dashboard presentados como bottom-sheet en móvil (`items-end` + `sm:items-center`) con `max-h-[92vh]` y scroll.
+- Sin dependencias nuevas, sin cambios de lógica (mismas consultas, handlers, validaciones y autenticación).
+- No se modificaron la Landing (`app/page.tsx`), el Login (`app/login/page.tsx`), `app/globals.css`, `lib/supabase/client.ts`, Supabase, n8n, Docker, Cloudflare, WhatsApp ni Meta Developers.
+- Verificación realizada: `npm run build` ✅ (Next.js 16.3.5, Turbopack; rutas `/`, `/login`, `/dashboard` prerenderizadas; TypeScript sin errores).
+- Pendiente: prueba visual en navegador real (tablet/móvil) y commit de la rama.
+
 ---
 
 ## 10. Archivos principales
@@ -434,6 +466,15 @@ Verificaciones de la ETAPA 4 pendientes de confirmar en navegador real:
 
 > Nota: el entorno no dispone de archivo `.env`, por lo que el build requiere las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Para verificar las ETAPAS 1 y 2 se ejecutó el build inyectando valores temporales SOLO dentro del proceso (no se crearon archivos ni credenciales).
 
+Estado de la ETAPA 5:
+
+- [x] `npm run build` ✅ (2026-09-19 — Next.js 16.3.5, Turbopack; rutas `/`, `/login`, `/dashboard` prerenderizadas; TypeScript sin errores; con variables temporales en el proceso, sin `.env`)
+- [x] TypeScript sin errores (durante el build)
+- [x] Cambios limitados a `app/dashboard/page.tsx` y `components/StatCard.tsx` (confirmado con `git diff --name-only` y `git status --short`)
+- [x] Cambios exclusivamente de UX/UI responsive móvil (por revisión del diff; sin cambios de lógica ni consultas)
+- [x] Sin cambios en Landing (`app/page.tsx`), Login (`app/login/page.tsx`), `app/globals.css`, `lib/supabase/client.ts`, Supabase, base de datos, n8n ni WhatsApp
+- [ ] Prueba visual en navegador real (tablet y móvil: drawer, grillas de 2 columnas, bottom-sheet de modales, scroll horizontal de la tabla de saldos).
+
 ---
 
 ## 12. Pendientes / Problemas conocidos
@@ -444,6 +485,8 @@ Actualmente:
 - Falta una revisión visual final de la Landing, el Login y el Dashboard en navegador (animaciones, scroll suave, menú móvil, drawer, tablas, contraste).
 - Falta confirmar en entorno real el flujo de login → dashboard, "Cerrar sesión" y el bloqueo de `/dashboard` sin sesión (requiere `.env` con credenciales reales).
 - Falta confirmar si `public/images/connie.png` es el asset definitivo de Connie.
+- Prueba visual en navegador real de los ajustes móviles de la ETAPA 5 (tablet y móvil: drawer, grillas de 2 columnas, bottom-sheet de modales, scroll horizontal de la tabla de saldos).
+- Los cambios de la ETAPA 5 permanecen sin commitear en la rama (pendiente `git add`/`commit` autorizado).
 
 > Esta sección está preparada para agregar nuevos problemas a medida que surjan.
 

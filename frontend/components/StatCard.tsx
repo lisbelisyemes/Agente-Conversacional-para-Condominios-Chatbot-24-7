@@ -28,15 +28,15 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, icon, tone = "gray", hint }: StatCardProps) {
   return (
-    <div className="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
-      <div className="flex items-center justify-between">
-        <p className="text-sm font-medium text-slate-500">{label}</p>
-        <span className={`grid size-9 place-items-center rounded-xl ${CHIP[tone]}`} aria-hidden="true">
+    <div className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm transition-shadow hover:shadow-md sm:p-5">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-medium leading-snug text-slate-500">{label}</p>
+        <span className={`grid size-8 shrink-0 place-items-center rounded-lg sm:size-9 sm:rounded-xl ${CHIP[tone]}`} aria-hidden="true">
           {icon}
         </span>
       </div>
-      <p className={`mt-3 text-2xl font-bold tracking-tight ${VALUE[tone]}`}>{value}</p>
-      {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
+      <p className={`mt-2.5 truncate text-lg font-bold tracking-tight sm:mt-3 sm:text-2xl ${VALUE[tone]}`}>{value}</p>
+      {hint && <p className="mt-1 hidden text-xs text-slate-400 sm:block">{hint}</p>}
     </div>
   );
 }

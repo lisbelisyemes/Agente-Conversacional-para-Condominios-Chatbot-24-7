@@ -394,13 +394,13 @@ export default function Dashboard() {
 
     return (
       <>
-        <div className="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm sm:p-8">
-          <p className="text-sm font-semibold text-blue-700">Resumen</p>
-          <h2 className="mt-2 text-2xl font-bold tracking-tight text-brand-950 sm:text-3xl">Todo está en orden.</h2>
-          <p className="mt-2 text-sm text-slate-500">Monitorea la operación diaria de tu condominio desde un solo lugar.</p>
+        <div className="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm sm:p-8">
+          <p className="text-xs font-semibold text-blue-700 sm:text-sm">Resumen</p>
+          <h2 className="mt-1.5 text-xl font-bold tracking-tight text-brand-950 sm:mt-2 sm:text-3xl">Todo está en orden.</h2>
+          <p className="mt-1.5 text-sm text-slate-500 sm:mt-2">Monitorea la operación diaria de tu condominio desde un solo lugar.</p>
         </div>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-label="Indicadores principales">
+        <section className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3" aria-label="Indicadores principales">
           <StatCard label="Deuda Total Activa" value={`$${deudaTotal.toFixed(2)}`} tone="red" icon={<IconMoney className="size-5" />} hint="Suma de saldos pendientes" />
           <StatCard label="Incidencias Pendientes" value={String(reportesPendientes)} tone="amber" icon={<IconAlert className="size-5" />} hint="Esperando resolución" />
           <StatCard label="Estado del Bot" value="En línea" tone="green" icon={<IconBot className="size-5" />} hint="Connie atendiendo 24/7" />
@@ -414,17 +414,17 @@ export default function Dashboard() {
 
   const renderReglamento = () => (
     <section className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
-      <div className="border-b border-brand-100 px-5 py-5 sm:px-6">
+      <div className="border-b border-brand-100 px-4 py-4 sm:px-6 sm:py-5">
         <h2 className="text-lg font-bold text-brand-950">Reglamento Interno Base</h2>
         <p className="mt-1 text-sm text-slate-500">Fragmentos ingeridos por el asistente conversacional para responder a residentes.</p>
       </div>
       <div className="divide-y divide-brand-100/70">
         {isLoading ? (
-          <p className="px-6 py-8 text-sm text-slate-500"><InlineLoader text="Cargando reglamento..." /></p>
+          <p className="px-4 py-8 text-sm text-slate-500 sm:px-6"><InlineLoader text="Cargando reglamento..." /></p>
         ) : reglamento.length === 0 ? (
-          <p className="px-6 py-8 text-sm text-slate-500">No hay artículos disponibles.</p>
+          <p className="px-4 py-8 text-sm text-slate-500 sm:px-6">No hay artículos disponibles.</p>
         ) : reglamento.map((regla) => (
-          <div key={regla.id} className="flex gap-4 px-5 py-4 sm:px-6">
+          <div key={regla.id} className="flex gap-3 px-4 py-4 sm:gap-4 sm:px-6">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-sm font-bold text-brand-800">
               {regla.pagina}
             </span>
@@ -437,7 +437,7 @@ export default function Dashboard() {
 
   const renderEstadosDeCuenta = () => (
     <section className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
-      <div className="flex flex-col gap-3 border-b border-brand-100 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div className="flex flex-col gap-3 border-b border-brand-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
         <div>
           <h2 className="text-lg font-bold text-brand-950">Saldos por Apartamento</h2>
           <p className="mt-1 text-sm text-slate-500">Control de morosidad y cuentas por cobrar.</p>
@@ -452,7 +452,7 @@ export default function Dashboard() {
         </button>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm text-slate-600">
+        <table className="w-full min-w-[640px] text-left text-sm text-slate-600">
           <thead className="bg-brand-50 text-xs uppercase tracking-wide text-brand-800">
             <tr>
               <th scope="col" className="px-5 py-3.5 font-semibold sm:px-6">Apto</th>
@@ -520,20 +520,20 @@ export default function Dashboard() {
 
   const renderIncidencias = () => (
     <section className="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
-      <div className="border-b border-brand-100 px-5 py-5 sm:px-6">
+      <div className="border-b border-brand-100 px-4 py-4 sm:px-6 sm:py-5">
         <h2 className="text-lg font-bold text-brand-950">Historial de Incidencias</h2>
         <p className="mt-1 text-sm text-slate-500">Reportes generados por los residentes mediante WhatsApp.</p>
       </div>
       <div className="divide-y divide-brand-100/70">
         {isLoading ? (
-          <p className="px-6 py-8 text-sm text-slate-500"><InlineLoader text="Cargando incidencias..." /></p>
+          <p className="px-4 py-8 text-sm text-slate-500 sm:px-6"><InlineLoader text="Cargando incidencias..." /></p>
         ) : reportes.length === 0 ? (
-          <p className="px-6 py-8 text-sm text-slate-500">No hay reportes registrados.</p>
+          <p className="px-4 py-8 text-sm text-slate-500 sm:px-6">No hay reportes registrados.</p>
         ) : reportes.map((reporte) => {
           const fechaFormateada = new Date(reporte.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
           return (
-            <div key={reporte.id} className={`flex flex-col gap-3 px-5 py-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:px-6 ${reporte.urgente ? "bg-red-50/50 hover:bg-red-50" : "hover:bg-brand-50/40"}`}>
+            <div key={reporte.id} className={`flex flex-col gap-3 px-4 py-4 transition-colors sm:flex-row sm:items-center sm:justify-between sm:px-6 ${reporte.urgente ? "bg-red-50/50 hover:bg-red-50" : "hover:bg-brand-50/40"}`}>
               <div className="flex flex-col gap-2">
                 <div className="flex flex-wrap items-center gap-2">
                   {reporte.urgente && (
@@ -618,29 +618,29 @@ export default function Dashboard() {
         )}
 
         <section className="flex min-w-0 flex-1 flex-col">
-          <header className="shrink-0 border-b border-brand-100 bg-white/90 px-4 py-4 backdrop-blur sm:px-8">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
+          <header className="shrink-0 border-b border-brand-100 bg-white/90 px-3 py-3 backdrop-blur sm:px-8 sm:py-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(true)}
-                  className="grid size-10 place-items-center rounded-xl border border-brand-100 text-brand-800 transition hover:bg-brand-50 lg:hidden"
+                  className="grid size-9 shrink-0 place-items-center rounded-xl border border-brand-100 text-brand-800 transition hover:bg-brand-50 sm:size-10 lg:hidden"
                   aria-label="Abrir menú de navegación"
                 >
                   <IconMenu className="size-5" />
                 </button>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest text-brand-700">Panel administrativo</p>
-                  <h1 className="mt-0.5 text-xl font-bold tracking-tight text-brand-950 sm:text-2xl">{activeSection}</h1>
+                <div className="min-w-0">
+                  <p className="hidden text-xs font-semibold uppercase tracking-widest text-brand-700 sm:block">Panel administrativo</p>
+                  <h1 className="truncate text-lg font-bold tracking-tight text-brand-950 sm:mt-0.5 sm:text-2xl">{activeSection}</h1>
                 </div>
               </div>
-              <div className="flex items-center gap-2 sm:gap-3">
+              <div className="flex shrink-0 items-center gap-2 sm:gap-3">
                 <span className="hidden items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200 sm:inline-flex">
                   <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
                   Sistema en línea
                 </span>
                 <span
-                  className="grid size-10 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-800"
+                  className="grid size-9 place-items-center rounded-full bg-brand-100 text-sm font-bold text-brand-800 sm:size-10"
                   title={adminEmail ?? "Administrador"}
                   aria-label={adminEmail ?? "Administrador"}
                 >
@@ -649,29 +649,17 @@ export default function Dashboard() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="grid size-10 place-items-center rounded-xl border border-brand-100 text-brand-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 lg:hidden"
+                  className="grid size-9 place-items-center rounded-xl border border-brand-100 text-brand-700 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 sm:size-10 lg:hidden"
                   aria-label="Cerrar sesión"
                 >
                   <IconLogout className="size-4" />
                 </button>
               </div>
             </div>
-            <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:hidden" aria-label="Navegación móvil">
-              {sections.map((section) => (
-                <button
-                  key={section}
-                  type="button"
-                  onClick={() => setActiveSection(section)}
-                  className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm transition-colors ${activeSection === section ? "bg-brand-900 font-medium text-white" : "text-slate-500 hover:bg-brand-100/60"}`}
-                >
-                  {section}
-                </button>
-              ))}
-            </nav>
           </header>
 
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <div className="mx-auto max-w-7xl space-y-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8">
+            <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
               {activeSection === "Resumen" && renderResumen()}
               {activeSection === "Reglamento" && renderReglamento()}
               {activeSection === "Estados de cuenta" && renderEstadosDeCuenta()}
@@ -826,8 +814,8 @@ const Modal = ({
   children: React.ReactNode;
   maxWidth?: string;
 }) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-950/60 p-4" role="dialog" aria-modal="true" aria-label={title}>
-    <div className={`w-full ${maxWidth} rounded-2xl border border-brand-100 bg-white p-6 shadow-2xl`}>
+  <div className="fixed inset-0 z-50 flex items-end justify-center overflow-y-auto bg-brand-950/60 p-4 sm:items-center" role="dialog" aria-modal="true" aria-label={title}>
+    <div className={`my-auto w-full ${maxWidth} max-h-[92vh] overflow-y-auto rounded-2xl border border-brand-100 bg-white p-5 shadow-2xl sm:p-6`}>
       <div className="flex items-start justify-between gap-4">
         <h2 className="text-lg font-bold text-brand-950">{title}</h2>
         <button
