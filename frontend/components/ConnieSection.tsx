@@ -2,9 +2,8 @@ import Image from "next/image";
 import ConnieChat from "./ConnieChat";
 import Reveal from "./Reveal";
 
-// Configurar aquí el enlace de WhatsApp de Connie cuando exista un número oficial.
-// Mantener vacío mientras no haya un número configurado (no se usan números falsos).
-const WHATSAPP_URL = "";
+// Enlace oficial de WhatsApp de Connie (2026-09-19).
+const WHATSAPP_URL = "https://wa.me/584126212092";
 
 export default function ConnieSection() {
   return (

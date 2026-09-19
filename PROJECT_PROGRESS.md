@@ -306,6 +306,8 @@ Existen dos experiencias principales:
 - `app/globals.css` ampliado: colores de marca, keyframes (fade-up, chat-in, float, typing) y scroll suave.
 - No se modificaron `app/login/page.tsx` ni `app/dashboard/page.tsx`.
 
+Ajuste posterior (2026-09-19): se configuró el enlace real de WhatsApp de Connie (`WHATSAPP_URL = "https://wa.me/584126212092"` en `components/ConnieSection.tsx`); el botón "Hablar con Connie por WhatsApp" quedó activo. TypeScript verificado sin errores.
+
 ---
 
 ## 10. Archivos principales
@@ -368,7 +370,6 @@ Verificaciones generales pendientes de confirmar en entorno real:
 Actualmente:
 
 - No existe archivo `.env` en el proyecto; sin él, `npm run build`/`next dev` fallan por falta de `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. (Pendiente ambiental; no modificar credenciales sin autorización.)
-- Botón "Hablar con Connie por WhatsApp" inactivo: falta configurar `WHATSAPP_URL` en `components/ConnieSection.tsx` cuando exista un número oficial.
 - Falta una revisión visual final de la Landing en navegador (animaciones del chat, scroll suave, menú móvil, contraste).
 - Login necesita rediseño visual (ETAPA 3).
 - Dashboard necesita rediseño visual (ETAPA 4).
