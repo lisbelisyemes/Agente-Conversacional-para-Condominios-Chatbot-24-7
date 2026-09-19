@@ -78,9 +78,9 @@ Estado actual conocido:
 |------|--------|--------|
 | `/` | Landing Page pública | ✅ Completada |
 | `/login` | Login administrativo | ✅ Implementado y rediseñado (ETAPA 3) |
-| `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual: ⬜ Pendiente, ETAPA 4) |
+| `/dashboard` | Dashboard administrativo protegido | ✅ Implementado (rediseño visual completado, ETAPA 4) |
 
-> ETAPA 1 (reorganización), ETAPA 2 (Landing) y ETAPA 3 (rediseño del Login) completadas y verificadas.
+> ETAPA 1 (reorganización), ETAPA 2 (Landing), ETAPA 3 (rediseño del Login) y ETAPA 4 (rediseño del Dashboard) completadas y verificadas.
 
 ---
 
@@ -164,32 +164,32 @@ Mejorar:
 
 ### ETAPA 4 — Rediseño del Dashboard
 
-- **Estado:** ⬜ Pendiente
+- **Estado:** ✅ Completada (2026-09-19)
 - **Objetivo:** Mejorar visualmente el Dashboard manteniendo toda su funcionalidad.
 
 Conservar:
 
-- [ ] Supabase
-- [ ] Apartamentos
-- [ ] Movimientos financieros
-- [ ] Cargos
-- [ ] Pagos
-- [ ] Incidencias
-- [ ] Reglamento
-- [ ] Modales
-- [ ] Autenticación
+- [x] Supabase
+- [x] Apartamentos
+- [x] Movimientos financieros
+- [x] Cargos
+- [x] Pagos
+- [x] Incidencias
+- [x] Reglamento
+- [x] Modales
+- [x] Autenticación
 
 Mejorar:
 
-- [ ] Sidebar
-- [ ] Navegación
-- [ ] Tarjetas
-- [ ] Tablas
-- [ ] Estados
-- [ ] Botones
-- [ ] Jerarquía visual
-- [ ] Responsive design
-- [ ] Identidad visual
+- [x] Sidebar
+- [x] Navegación
+- [x] Tarjetas
+- [x] Tablas
+- [x] Estados
+- [x] Botones
+- [x] Jerarquía visual
+- [x] Responsive design
+- [x] Identidad visual
 
 ---
 
@@ -320,6 +320,21 @@ Ajuste posterior (2026-09-19): se configuró el enlace real de WhatsApp de Conni
 - Sin nuevas dependencias; iconos SVG inline. Accesibilidad mantenida: labels asociados, `aria-invalid`, `role="alert"`, `autocomplete`, tipos `email`/`password`, estados de foco.
 - No se modificaron `app/page.tsx` (Landing), `app/dashboard/page.tsx`, Supabase, n8n ni WhatsApp.
 
+### ETAPA 4 — Rediseño del Dashboard (2026-09-19)
+
+- Rediseñado `app/dashboard/page.tsx` por completo en su presentación, conservando IDÉNTICA toda la lógica funcional: tipos, estados, consultas a Supabase (`apartamentos`, `movimientos_financieros`, `reportes_fallas`, `reglamento_embeddings`), creación de apartamentos, creación de cargos, recálculo de saldo, actualización de estados de incidencias, detalle de movimientos, marcar como pagado, autenticación y redirección de usuarios sin sesión a `/login`.
+- Sidebar moderno en escritorio (`lg`): fondo `brand-950`, logo "Condominio Inteligente", navegación con iconos SVG inline (Resumen, Reglamento, Estados de cuenta, Incidencias), tarjeta de Connie con su imagen (`/images/connie.png`), estado "Disponible 24/7" y botón "Cerrar sesión".
+- En móvil: menú hamburguesa con drawer lateral (ancho máx. 85%) + navegación por pestañas debajo del header.
+- Se implementó "Cerrar sesión" (antes NO existía): `supabase.auth.signOut()` + `router.push("/login")`, disponible en el sidebar y como icono en el header móvil. Botón funcional real, no decorativo.
+- Header limpio: "Panel administrativo", título de la sección activa, indicador "Sistema en línea", avatar de administrador con iniciales derivadas del email real de la sesión (sin inventar datos).
+- Resumen rediseñado con el componente reutilizado `StatCard` (6 tarjetas con datos REALES ya obtenidos por el dashboard): Deuda Total Activa, Incidencias Pendientes, Estado del Bot, Apartamentos Registrados, Apartamentos Solventes, Apartamentos con Deuda. No se agregaron consultas nuevas.
+- Estados codificados con el componente reutilizado `StatusBadge` (verde=resuelto/solvente, ámbar=pendiente, rojo=deuda/urgente, azul=información), siempre acompañados de texto/etiqueta.
+- Tablas y listas rediseñadas con tarjetas, headers limpios, estados de carga (`Cargando...` con spinner), estados vacíos ("No hay registros...") y hover states.
+- Modales rediseñados con estructura consistente (título + botón cerrar X + acciones), manteniendo formularios, validaciones y campos idénticos.
+- Iconos SVG inline (sin instalar dependencias; no existe librería de iconos en `package.json`).
+- Paleta de marca aplicada (`brand-950` a `brand-50`), respetando el uso semántico del color y sin sobresaturar de verde.
+- Sin cambios en Supabase, SQL, base de datos, n8n, WhatsApp, Docker, Cloudflare ni Meta Developers.
+
 ---
 
 ## 10. Archivos principales
@@ -330,7 +345,7 @@ Ajuste posterior (2026-09-19): se configuró el enlace real de WhatsApp de Conni
 - `app/layout.tsx` → Layout global de Next.js (metadata y `lang="es"`).
 - `app/globals.css` → estilos globales (paleta de marca y animaciones).
 - `lib/supabase/client.ts` → cliente de Supabase.
-- `components/` → componentes de la Landing (Navbar, Hero, Features, FeatureCard, ConnieSection, ConnieChat, HowItWorks, AdminPreview, CtaFinal, Footer, Reveal).
+- `components/` → componentes de la Landing (Navbar, Hero, Features, FeatureCard, ConnieSection, ConnieChat, HowItWorks, AdminPreview, CtaFinal, Footer, Reveal) y componentes reutilizados del Dashboard (`StatCard`, `StatusBadge`).
 - `public/` → recursos estáticos (incluye `public/images/connie.png`).
 
 > Se agregarán otros archivos a esta lista cuando sean creados o identificados.
@@ -391,6 +406,32 @@ Verificaciones generales pendientes de confirmar en entorno real:
 - [ ] `npm run build` sin variables temporales, una vez exista un `.env` con las credenciales reales de Supabase.
 - [ ] Revisión visual final de la Landing en navegador (animaciones, desplazamiento suave, menú móvil, contraste).
 
+Estado de la ETAPA 4:
+
+- [x] `npm run build` ✅ (2026-09-19 — rutas `/`, `/login`, `/dashboard` prerenderizadas)
+- [x] TypeScript sin errores (`npx tsc --noEmit` y durante el build)
+- [x] ESLint sin errores sobre `app/dashboard/page.tsx`, `components/StatCard.tsx`, `components/StatusBadge.tsx`, `app/login`, `app/page.tsx`, `app/layout.tsx`
+- [x] `/` → Landing sigue funcionando (200, prerenderizada)
+- [x] `/login` → sigue funcionando (200, prerenderizada)
+- [x] `/dashboard` → sigue funcionando (200, prerenderizada)
+- [x] Lógica del Dashboard conservada por revisión de código (mismas consultas, handlers, modales y validaciones)
+- [x] Redirección sin sesión en `/dashboard` → `/login` (heredada de ETAPA 1, sin cambios)
+- [x] "Cerrar sesión" implementado con `supabase.auth.signOut()` + `router.push("/login")`; bloquea el acceso a `/dashboard` después de cerrar sesión (por revisión de código; requiere prueba real en navegador)
+- [x] Datos reales de Supabase intactos (no se crearon/eliminaron registros; solo frontend)
+- [x] Responsive design (sidebar en escritorio, drawer + pestañas en móvil, tablas con `overflow-x-auto`)
+- [x] Sin scroll horizontal (secciones de Connie; tablas contenidas en contenedor con scroll propio)
+- [x] Se reutilizaron los componentes `StatCard` y `StatusBadge` (no se eliminaron ni reemplazaron innecesariamente)
+- [x] No se modificó Supabase (sin SQL, sin escrituras)
+- [x] No se modificó n8n ni WhatsApp
+- [x] No se modificó la Landing ni el Login
+
+Verificaciones de la ETAPA 4 pendientes de confirmar en navegador real:
+
+- [ ] Login → `/dashboard` con credenciales reales (requiere `.env` y Supabase real).
+- [ ] Cerrar sesión desde el sidebar y desde el header móvil (prueba en navegador).
+- [ ] Reintentar acceso a `/dashboard` después de cerrar sesión → debe volver a `/login`.
+- [ ] Revisión visual del dashboard en escritorio, tablet y móvil (drawer, tarjetas, tablas, contraste).
+
 > Nota: el entorno no dispone de archivo `.env`, por lo que el build requiere las variables `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. Para verificar las ETAPAS 1 y 2 se ejecutó el build inyectando valores temporales SOLO dentro del proceso (no se crearon archivos ni credenciales).
 
 ---
@@ -400,8 +441,8 @@ Verificaciones generales pendientes de confirmar en entorno real:
 Actualmente:
 
 - No existe archivo `.env` en el proyecto; sin él, `npm run build`/`next dev` fallan por falta de `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`. (Pendiente ambiental; no modificar credenciales sin autorización.)
-- Falta una revisión visual final de la Landing y del Login en navegador (animaciones, scroll suave, menú móvil, contraste).
-- Dashboard necesita rediseño visual (ETAPA 4).
+- Falta una revisión visual final de la Landing, el Login y el Dashboard en navegador (animaciones, scroll suave, menú móvil, drawer, tablas, contraste).
+- Falta confirmar en entorno real el flujo de login → dashboard, "Cerrar sesión" y el bloqueo de `/dashboard` sin sesión (requiere `.env` con credenciales reales).
 - Falta confirmar si `public/images/connie.png` es el asset definitivo de Connie.
 
 > Esta sección está preparada para agregar nuevos problemas a medida que surjan.
