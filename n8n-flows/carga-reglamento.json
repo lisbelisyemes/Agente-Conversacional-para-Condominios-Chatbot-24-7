@@ -1,0 +1,157 @@
+{
+  "name": "Ingesta Reglamento",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "bdd9d339-aec2-411b-bca5-85090933c495",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "jsCode": "const fragmentos = [\n{ pagina: 1, contenido: \"Disposiciones generales: Este reglamento aplica a todos los propietarios, arrendatarios, residentes y visitantes del condominio. Su objetivo es garantizar la sana convivencia, el buen uso de las áreas comunes y la seguridad de todos los habitantes.\" },\n{ pagina: 2, contenido: \"Horario de silencio y convivencia: El horario de silencio rige de 10:00 p.m. a 7:00 a.m. de domingo a jueves, y de 11:00 p.m. a 8:00 a.m. viernes y sábado. Se debe evitar música alta, remodelaciones, taladros u otras actividades ruidosas durante ese horario.\" },\n{ pagina: 3, contenido: \"Piscina: abierta de 7:00 a.m. a 9:00 p.m. todos los días. Es obligatorio usar traje de baño y ducharse antes de ingresar. No se permite vidrio, alimentos ni mascotas. Menores de 12 años deben estar acompañados de un adulto.\" },\n{ pagina: 4, contenido: \"Gimnasio: funciona de 6:00 a.m. a 10:00 p.m. lunes a viernes, y de 7:00 a.m. a 8:00 p.m. sábados y domingos. Es obligatorio usar toalla sobre los equipos. Uso exclusivo para mayores de 16 años, salvo acompañados de un adulto.\" },\n{ pagina: 5, contenido: \"Salón social y BBQ: se reservan con mínimo 48 horas de anticipación a través de la administración. Máximo 2 reservas por apartamento al mes. Horario máximo de uso hasta las 11:00 p.m. El residente es responsable de la limpieza y daños.\" },\n{ pagina: 6, contenido: \"Estacionamiento: cada apartamento tiene un puesto asignado. Prohibido estacionar en puestos de visitantes por más de 24 horas o en puestos de otro apartamento sin autorización. Los vehículos de visitantes deben registrarse en portería.\" },\n{ pagina: 7, contenido: \"Mascotas: se permite su tenencia siempre que no representen riesgo. Es obligatorio recoger sus desechos en áreas comunes y usar correa en pasillos y ascensores. No se permite su ingreso a la piscina, gimnasio ni salón social.\" },\n{ pagina: 8, contenido: \"Visitantes: deben registrarse en portería con nombre, apartamento a visitar y hora estimada de salida. El residente es responsable del comportamiento de sus visitantes. Visitas nocturnas después de las 10:00 p.m. requieren autorización directa del residente.\" },\n{ pagina: 9, contenido: \"Basura y reciclaje: los residuos ordinarios van en el cuarto de basura de cada piso, en bolsas cerradas. El material reciclable se separa y deposita en los contenedores del sótano. Recolección ordinaria diaria; reciclaje martes y viernes.\" },\n{ pagina: 10, contenido: \"Mantenimiento y reportes de fallas: cualquier falla en áreas comunes (ascensores, iluminación, fugas de agua, fallas eléctricas) debe reportarse de inmediato a la administración indicando ubicación exacta y descripción. Fallas dentro de las unidades privadas son responsabilidad del propietario, salvo que vengan de instalaciones comunes.\" },\n{ pagina: 11, contenido: \"Cuotas de administración: deben pagarse dentro de los primeros 5 días hábiles de cada mes. Pasado ese plazo aplican recargos por mora. Los propietarios pueden consultar su saldo pendiente a través del sistema de atención del condominio.\" },\n{ pagina: 12, contenido: \"Seguridad: el condominio cuenta con vigilancia las 24 horas. Se recomienda no dejar objetos de valor en áreas comunes y reportar actividad sospechosa a portería. La pérdida de tarjeta o llave de acceso debe notificarse de inmediato para su desactivación.\" },\n{ pagina: 13, contenido: \"Mudanzas: deben programarse con la administración con al menos 24 horas de anticipación, en horario de 8:00 a.m. a 6:00 p.m. de lunes a sábado, usando el ascensor de servicio cuando esté disponible.\" },\n{ pagina: 14, contenido: \"Modificaciones al reglamento: este reglamento puede ser modificado por decisión de la asamblea de copropietarios. Las actualizaciones se comunican a todos los residentes y quedan disponibles en el panel de administración y el asistente virtual.\" }\n];\n\nreturn fragmentos.map(f => ({ json: f }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "5b691c59-1b28-436e-9aa5-39b3202b08ca",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googlePalmApi",
+        "sendBody": true,
+        "specifyBody": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{ { \"model\": \"models/gemini-embedding-001\", \"content\": { \"parts\": [ { \"text\": $json.contenido } ] }, \"outputDimensionality\": 1536 } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "f6548c70-e0d0-4d1d-b7e1-ecbb727ad626",
+      "name": "HTTP Request",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "GFqVOxbA05YvGXro",
+          "name": "Connie - Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const valores = $input.item.json.embedding.values;\n\nreturn {\n  json: {\n    contenido: $('Code in JavaScript').item.json.contenido,\n    pagina: $('Code in JavaScript').item.json.pagina,\n    embeddingStr: '[' + valores.join(',') + ']'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "id": "e521052c-c6ac-4818-bee5-52d573976f91",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO reglamento_embeddings (contenido, pagina, embedding)\nVALUES ($1, $2, $3::vector);",
+        "options": {
+          "queryReplacement": "={{ [ $json.contenido, $json.pagina, $json.embeddingStr ] }}"
+        }
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        896,
+        0
+      ],
+      "id": "b5a6b64e-1521-416b-b8a7-dfe45ce0e97f",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "oAwfnTE3OcuJGmu5",
+          "name": "Connie - PostgreSQL Supabase"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2e67f8b0-baec-4814-a11a-1215db4d525b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1a03455f4337176c3690a6624da3db67f7cc1ecd93242e0288782b129270b944"
+  },
+  "nodeGroups": [],
+  "id": "jWnw51Guro1Pu4LT",
+  "tags": []
+}
